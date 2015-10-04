@@ -1,0 +1,12 @@
+# OS Generated
+.DS_Store*
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.idea
+.phpintel
+*.sublime*
+
+# package
+manager.zip
