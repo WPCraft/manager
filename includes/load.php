@@ -57,4 +57,5 @@ require_once( PATH . INC ."/libs/api/class.api.php");
 
 # Initialize the Classes
 $db = new DB(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_COLLATE, DB_CHARSET, $table_prefix);
+$data_error = new DATA_ERROR();
 # Classes initialized
