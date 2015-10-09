@@ -34,8 +34,7 @@ require_once( PATH . INC . "/functions.php");
  */
 # Loading Libraries...
 // Database
-require_once( PATH . INC . "/libs/database/class.db-connect.php");
-require_once( PATH . INC . "/libs/database/class.db-query.php");
+require_once( PATH . INC . "/libs/database/class.db.php");
 
 // Data
 require_once( PATH . INC . "/libs/data/class.data-error.php");
@@ -56,5 +55,6 @@ require_once( PATH . INC ."/libs/authentication/class.authentication-register.ph
 require_once( PATH . INC ."/libs/api/class.api.php");
 # Libraries Loaded.
 
-
-
+# Initialize the Classes
+$db = new DB(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_COLLATE, DB_CHARSET, $table_prefix);
+# Classes initialized

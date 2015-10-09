@@ -11,10 +11,10 @@
 /**
  * Database Credentials
  */
-define('DB_NAME', 'pagifyDBsudxd');
-define('DB_USER', 'pagifyDBsudxd');
-define('DB_PASSWORD', 'czGXgXoxjr');
-define('DB_HOST', '127.0.0.1');
+define('DB_HOST', 'localhost');
+define('DB_USER', 'root');
+define('DB_PASSWORD', '');
+define('DB_NAME', 'manager');
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 
