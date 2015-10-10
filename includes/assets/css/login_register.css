@@ -1,0 +1,72 @@
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,dl,dt,dd,ol,nav ul,nav li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{margin:0;padding:0;border:0;font-size:100%;font:inherit;vertical-align:baseline}
+article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}
+ol,ul{list-style:none;margin:0;padding:0}
+blockquote,q{quotes:none}
+blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}
+table{border-collapse:collapse;border-spacing:0}
+a{text-decoration:none}
+a:hover{text-decoration:underline}
+.txt-rt{text-align:right}
+.txt-lt{text-align:left}
+.txt-center{text-align:center}
+.float-rt{float:right}
+.float-lt{float:left}
+.clear{clear:both}
+.pos-relative{position:relative}
+.pos-absolute{position:absolute}
+.vertical-base{vertical-align:baseline}
+.vertical-top{vertical-align:top}
+nav.vertical ul li{display:block}
+nav.horizontal ul li{display:inline-block}
+img{max-width:100%}
+body{background:#ecf0f1;-webkit-background-size:cover;-moz-background-size:cover;-o-background-size:cover;background-size:cover;position:relative;font-family:'Open Sans',sans-serif}
+.login-form{background:#fff;width:32%;margin:9% auto 4%;position:relative}
+.head{position:absolute;top:-15%;left:35%}
+.head img{border-radius:50%;-webkit-border-radius:50%;-o-border-radius:50%;-moz-border-radius:50%;border:6px solid rgba(221,218,215,0.23)}
+form{padding:24% 2.5em}
+form li{border:1px solid #B4B2B2;list-style:none;margin-bottom:25px;width:100%;background:none;border-radius:.3em;-webkit-border-radius:.3em;-o-border-radius:.3em;-moz-border-radius:.3em}
+.icon{background:url(../images/icons.png) no-repeat 0 0;height:30px;width:30px;display:block;float:left;margin:7px -15px 0 0}
+.user{background:url(../images/icons.png) no-repeat 12px 8px}
+.lock{background:url(../images/icons.png) no-repeat -17px 8px}
+input[type="text"],input[type="password"]{font-family:'Open Sans',sans-serif;width:60%;padding:.7em 2em .7em 1.7em;color:#858282;font-size:18px;outline:none;background:none;border:none;font-weight:600}
+form li:hover{border:1px solid #40A9DF;box-shadow:0 0 1em #40A9DF;-webkit-box-shadow:0 0 1em #40A9DF;-o-box-shadow:0 0 1em #40A9DF;-moz-box-shadow:0 0 1em #40A9DF}
+input[type="submit"]{background:#2ecc71;float:right;font-size:18px;display:inline-block;font-weight:600;color:#fff;transition:.1s all;-webkit-transition:.1s all;-moz-transition:.1s all;-o-transition:.1s all;cursor:pointer;outline:none;padding:15px 10px;margin-top:3px;font-family:'Open Sans',sans-serif;width:40%;border:none}
+input[type="submit"]:hover{background:#27ae60}
+.p-container{margin-top:2em}
+.p-container .checkbox{color:#858282;font-size:15px}
+.other-info{color:#34495e;position:absolute;margin-top:15px}
+.other-info:hover{color:#2c3e50;position:absolute;margin-top:15px}
+.other-info-register{color:#34495e;margin-left:-115px;margin-top:40px;position:absolute}
+.other-info-register:hover{color:#2c3e50}
+@media (max-width:1024px) {
+    .login-form{margin:8% auto 0;width:45%}
+    .copy-right{left:41%;bottom:-18%}
+}
+@media (max-width:768px) {
+    .login-form{margin:12% auto 0;width:57%}
+    .copy-right{left:38%;bottom:-14%}
+}
+@media (max-width:640px) {
+    .login-form{margin:13% auto 0;width:70%}
+    .copy-right{left:36%;bottom:-18%}
+}
+@media (max-width:480px) {
+    .login-form{margin:20% auto 0;width:90%}
+    .copy-right{left:30%;bottom:-17%}
+}
+@media (max-width:320px) {
+    .login-form{margin:20% auto 0;width:95%}
+    form{padding:19% 1.5em}
+    form li{margin-top:10px}
+    input[type="text"],input[type="password"]{font-size:15px;padding:.5em 1em}
+    input[type="submit"]{float:none;font-size:15px;padding:10px;width:40%;margin-left:28%}
+    .head{top:-12%;left:35.5%}
+    .head img{width:69%}
+    .user{background:url(../images/icons.png) no-repeat 12px 4px}
+    .lock{background:url(../images/icons.png) no-repeat -20px 3px}
+    .p-container .checkbox{float:none;text-align:center}
+    .p-container{margin-top:0}
+    .icon{margin:6px -11px 0 0}
+    .p-container .checkbox i{position:absolute;top:18px;left:43px}
+    .copy-right{left:20%;bottom:-10%}
+}
