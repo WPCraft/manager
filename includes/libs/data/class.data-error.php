@@ -2,7 +2,7 @@
 /**
  * Class: DATA_ERROR
  *
- *This class will handle the error's
+ * This class will handle the error's
  *
  * @package Manager
  * @sub-package Manager-Library
