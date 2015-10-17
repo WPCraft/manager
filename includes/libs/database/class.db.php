@@ -98,8 +98,8 @@ class DB{
      * ##########################################################################################
      */
     public function query($query){
-        //return mysql_query($query, $this->connection);
-        return $query;
+        echo $query;
+        return mysql_query($query, $this->connection);
     }
 
     /**
@@ -107,7 +107,7 @@ class DB{
      */
 
     public function exec($query){
-        echo $query;
+        return $this->query($query);
     }
 
     public function quote($string){
@@ -190,7 +190,7 @@ class DB{
         foreach ($data as $key => $value)
         {
             $type = gettype($value);
-
+            $key = str_replace('"', '', $key);
             if (
                 preg_match("/^(AND|OR)(\s+#.*)?$/i", $key, $relation_match) &&
                 $type == 'array'
@@ -203,7 +203,7 @@ class DB{
             else
             {
                 preg_match('/(#?)([\w\.\-]+)(\[(\>|\>\=|\<|\<\=|\!|\<\>|\>\<|\!?~)\])?/i', $key, $match);
-                $column = $this->column_quote($match[ 2 ]);
+                $column = $this->insert_column_quote($match[ 2 ]);
 
                 if (isset($match[ 4 ]))
                 {
@@ -251,7 +251,7 @@ class DB{
                             }
                             else
                             {
-                                $wheres[] = '(' . $column . ' BETWEEN ' . $this->quote($value[ 0 ]) . ' AND ' . $this->quote($value[ 1 ]) . ')';
+                                $wheres[] = '(' . $column . ' BETWEEN ' . $this->insert_column_quote($value[ 0 ]) . ' AND ' . $this->quote($value[ 1 ]) . ')';
                             }
                         }
                     }
@@ -327,7 +327,7 @@ class DB{
         }
 
 
-        return implode($conjunctor . ' AND ', $wheres);
+        return implode($conjunctor . ' ', $wheres);
     }
 
     protected function where_clause($where) {
@@ -366,13 +366,13 @@ class DB{
 
                 if (is_array($MATCH) && isset($MATCH[ 'columns' ], $MATCH[ 'keyword' ]))
                 {
-                    $where_clause .= ($where_clause != '' ? ' AND ' : ' WHERE ') . ' MATCH ("' . str_replace('.', '"."', implode($MATCH[ 'columns' ], '", "')) . '") AGAINST (' . $this->quote($MATCH[ 'keyword' ]) . ')';
+                    $where_clause .= ($where_clause != '' ? ' AND ' : ' WHERE ') . ' MATCH ("' . str_replace('.', '"."', implode($MATCH[ 'columns' ], '", "')) . '") AGAINST (' . $this->insert_column_quote($MATCH[ 'keyword' ]) . ')';
                 }
             }
 
             if (isset($where[ 'GROUP' ]))
             {
-                $where_clause .= ' GROUP BY ' . $this->column_quote($where[ 'GROUP' ]);
+                $where_clause .= ' GROUP BY ' . $this->insert_column_quote($where[ 'GROUP' ]);
 
                 if (isset($where[ 'HAVING' ]))
                 {
@@ -392,7 +392,7 @@ class DB{
                         is_array($ORDER[ 1 ])
                     )
                     {
-                        $where_clause .= ' ORDER BY FIELD(' . $this->column_quote($ORDER[ 0 ]) . ', ' . $this->array_quote($ORDER[ 1 ]) . ')';
+                        $where_clause .= ' ORDER BY FIELD(' . $this->insert_column_quote($ORDER[ 0 ]) . ', ' . $this->array_quote($ORDER[ 1 ]) . ')';
                     }
                     else
                     {
@@ -443,6 +443,7 @@ class DB{
             }
         }
 
+
         return $where_clause;
 
     }
@@ -463,10 +464,16 @@ class DB{
      * $mydata = [ "user_name" => "foo", "email" => "foo@bar.com" ]; $db->select('*', 'account', $mydata);
      * ==================
      */
-    public function select($column, $table_name, $wheres){
+    public function select($column, $table_name, $wheres, $limit = null){
         $table = $this->get_table_name($table_name);
-        $sql = "SELECT " . $column . "  FROM $table ". $this->where_clause($wheres) ."";
-        echo $sql;
+
+        if($limit == null){
+            $sql = "SELECT " . $column . "  FROM $table ". $this->where_clause($wheres) ."";
+        }else{
+            $sql = "SELECT " . $column . "  FROM $table ". $this->where_clause($wheres) ." LIMIT ". $limit ."";
+        }
+
+        return $this->exec($sql);
     }
 
     /**
