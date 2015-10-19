@@ -375,6 +375,8 @@ class USER{
        function is_current_user_is_admin(){
          if($this->get_current_user_role() == 10){
             return true;
+         }else{
+           return false;
          }
        }
 
