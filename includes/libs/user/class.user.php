@@ -19,147 +19,6 @@ class USER{
     }
 
     /**
-     * Check If it is email
-     * @param $email
-     * @return mixed
-     */
-    function validateEmail($email) {
-        return filter_var($email, FILTER_VALIDATE_EMAIL);
-    }
-
-    /**
-     * Get user ip
-     */
-     public function get_user_ip(){
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
-        return $ip;
-     }
-
-    /**
-     * Login
-     * @param $username_or_email
-     * @param $password
-     */
-    public function login($username_or_email, $password){
-
-        global $db,$data_error,$data_hashing;
-
-        // Check if the fields are empty
-        if(empty($username_or_email) || empty($password)){
-            $data_error->_set_error("Username or Password field is empty!", "high");
-        }else{
-            // Sanitize the Data
-            $username_or_email = _e($username_or_email);
-            $password = _e($password);
-
-            // Query The Data of user
-            $where = [
-                "AND" => [
-                  "OR" => [
-                    "username" => $username_or_email,
-                    "email" => $username_or_email
-                  ],
-                  "user_active" => "1",
-                  "user_banned" => "0"
-                ]
-            ];
-            $query = $db->select("*", "user", $where, 1);
-            $userData = mysql_fetch_array($query);
-            $storedPassword = $userData['password'];
-            if($_REQUEST['rememberme'] = 'on'){ $expireLogin = time() + WEEK_IN_SECONDS;}else{$expireLogin = time() + DAY_IN_SECONDS;}
-            $ip = $this->get_user_ip();
-            if((time() - $userData['last_attempt_to_login_timestamp']) > 300){
-              $updatedata = [ "number_of_attempt_to_login"  => "0", "last_attempt_to_login_timestamp" => time() ];
-              $db->update('user', $updatedata, $where);
-            }
-
-            if($userData['number_of_attempt_to_login'] > 5){
-                $data_error->_set_error("Account is deactivated for 5 minutes", "high");
-            }else{
-                if(mysql_num_rows($query) == 1){
-
-                    // Match the password with the stored hash
-                    if (password_verify($password, $storedPassword)) {
-
-                        // Login Successfull
-                        if (session_status() == PHP_SESSION_NONE) {
-                            session_start();
-                        }
-                        $_SESSION['useranme'] = $userData['username'];
-                        $_SESSION['userid']   = $userData['id'];
-                        $_SESSION['ip']       = $ip;
-                        $_SESSION['loginSecret'] = $data_hashing->_hash($type = 'sha1', $data = md5(uniqid() + SALT), SALT);
-
-                        // insert into the session Table
-                        $insertData = [
-                          "user_id" => $_SESSION['userid'],
-                          "content"     => $_SESSION['loginSecret'],
-                          "expire"     => $expireLogin
-                        ];
-                        $db->insert('session', $insertData);
-
-                        // Update The user Table
-                        $updatedata = [ "ip" => $ip, "number_of_attempt_to_login"  => "0", "last_attempt_to_login_timestamp" => time() ];
-                        $db->update('user', $updatedata, $where);
-
-                        header("Location: login.php?success=1&message=Login Successfull.");
-
-                    }
-                    else {
-                        $data_error->_set_error("Useranme or Password Invalid!", "high");
-                        // Update The user Table
-                        $time = time();
-                        $updatedata = [ "number_of_attempt_to_login"  => $userData['number_of_attempt_to_login']+1, "last_attempt_to_login_timestamp" => $time ];
-                        $db->update('user', $updatedata, $where);
-                    }
-
-                }else{
-                    $data_error->_set_error("Useranme or Password Invalid!", "high");
-                }
-            }
-
-        }
-
-        /**
-         * Show the errors
-         **/
-        foreach($data_error->error as $data){
-          foreach ($data as $string => $priroty) {
-
-            if($priroty = "high"){
-              $class = "alert alert-danger";
-            }elseif($priroty = "medium"){
-              $class = "alert alert-warning";
-            }else{
-              $class = "alert alert-danger";
-            }
-
-            echo '<div class="' . $class . '">' . $string . '</div><br>';
-          }
-        }
-    }
-
-    /**
-     * Random Password Generator
-     */
-     function randomPassword() {
-         $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-         $pass = array(); //remember to declare $pass as an array
-         $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
-         for ($i = 0; $i < 8; $i++) {
-             $n = rand(0, $alphaLength);
-             $pass[] = $alphabet[$n];
-         }
-         return implode($pass); //turn the array into a string
-     }
-
-    /**
      * Register
      * @param $username
      * @param $email
@@ -335,6 +194,189 @@ class USER{
       }
 
     }
+
+
+   /**
+    * Login
+    * @param $username_or_email
+    * @param $password
+    */
+   public function login($username_or_email, $password){
+
+       global $db,$data_error,$data_hashing;
+
+       // Check if the fields are empty
+       if(empty($username_or_email) || empty($password)){
+           $data_error->_set_error("Username or Password field is empty!", "high");
+       }else{
+           // Sanitize the Data
+           $username_or_email = _e($username_or_email);
+           $password = _e($password);
+
+           // Query The Data of user
+           $where = [
+               "AND" => [
+                 "OR" => [
+                   "username" => $username_or_email,
+                   "email" => $username_or_email
+                 ],
+                 "user_active" => "1",
+                 "user_banned" => "0"
+               ]
+           ];
+           $query = $db->select("*", "user", $where, 1);
+           $userData = mysql_fetch_array($query);
+           $storedPassword = $userData['password'];
+           if($_REQUEST['rememberme'] = 'on'){ $expireLogin = time() + WEEK_IN_SECONDS;}else{$expireLogin = time() + DAY_IN_SECONDS;}
+           $ip = $this->get_user_ip();
+           if((time() - $userData['last_attempt_to_login_timestamp']) > 300){
+             $updatedata = [ "number_of_attempt_to_login"  => "0", "last_attempt_to_login_timestamp" => time() ];
+             $db->update('user', $updatedata, $where);
+           }
+
+           if($userData['number_of_attempt_to_login'] > 5){
+               $data_error->_set_error("Account is deactivated for 5 minutes", "high");
+           }else{
+               if(mysql_num_rows($query) == 1){
+
+                   // Match the password with the stored hash
+                   if (password_verify($password, $storedPassword)) {
+
+                       // Login Successfull
+                       if (session_status() == PHP_SESSION_NONE) {
+                           session_start();
+                       }
+                       $_SESSION['useranme'] = $userData['username'];
+                       $_SESSION['userid']   = $userData['id'];
+                       $_SESSION['ip']       = $ip;
+                       $_SESSION['loginSecret'] = $data_hashing->_hash($type = 'sha1', $data = md5(uniqid() + SALT), SALT);
+
+                       // insert into the session Table
+                       $insertData = [
+                         "user_id" => $_SESSION['userid'],
+                         "content"     => $_SESSION['loginSecret'],
+                         "expire"     => $expireLogin
+                       ];
+                       $db->insert('session', $insertData);
+
+                       // Update The user Table
+                       $updatedata = [ "ip" => $ip, "number_of_attempt_to_login"  => "0", "last_attempt_to_login_timestamp" => time() ];
+                       $db->update('user', $updatedata, $where);
+
+                       header("Location: login.php?success=1&message=Login Successfull.");
+
+                   }
+                   else {
+                       $data_error->_set_error("Useranme or Password Invalid!", "high");
+                       // Update The user Table
+                       $time = time();
+                       $updatedata = [ "number_of_attempt_to_login"  => $userData['number_of_attempt_to_login']+1, "last_attempt_to_login_timestamp" => $time ];
+                       $db->update('user', $updatedata, $where);
+                   }
+
+               }else{
+                   $data_error->_set_error("Useranme or Password Invalid!", "high");
+               }
+           }
+
+       }
+
+       /**
+        * Show the errors
+        **/
+       foreach($data_error->error as $data){
+         foreach ($data as $string => $priroty) {
+
+           if($priroty = "high"){
+             $class = "alert alert-danger";
+           }elseif($priroty = "medium"){
+             $class = "alert alert-warning";
+           }else{
+             $class = "alert alert-danger";
+           }
+
+           echo '<div class="' . $class . '">' . $string . '</div><br>';
+         }
+       }
+   }
+
+   /**
+    * Check If it is email
+    * @param $email
+    * @return mixed
+    */
+   function validateEmail($email) {
+       return filter_var($email, FILTER_VALIDATE_EMAIL);
+   }
+
+   /**
+    * Get user ip
+    */
+    public function get_user_ip(){
+       if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+           $ip = $_SERVER['HTTP_CLIENT_IP'];
+       } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+           $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+       } else {
+           $ip = $_SERVER['REMOTE_ADDR'];
+       }
+       return $ip;
+    }
+
+
+   /**
+    * Random Password Generator
+    */
+    function randomPassword() {
+        $alphabet = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
+        $pass = array(); //remember to declare $pass as an array
+        $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+        for ($i = 0; $i < 8; $i++) {
+            $n = rand(0, $alphaLength);
+            $pass[] = $alphabet[$n];
+        }
+        return implode($pass); //turn the array into a string
+    }
+
+    /**
+     * Ceck if the user is logged in
+     */
+     function current_user_is_logged_in(){
+        if(isset($_SESSION['useranme']) && isset($_SESSION['userid']) && isset($_SESSION['ip']) && isset($_SESSION['loginSecret'])){
+            return true;
+        }else{
+            return false;
+        }
+     }
+
+     /**
+      * Get current user level
+      *
+      * 0 : unauthencated user
+      * 1 : Subscriber
+      * 2 : Contributor
+      * 9 :  Editor : can edit post & page
+      * 10 : Administrator : can control all over things
+      */
+      function get_current_user_role(){
+          global $db;
+          if($this->current_user_is_logged_in()){
+              $userid = $_SESSION['userid'];
+              $currentUserData = mysql_fetch_array($db->select("*","role",["user_id" => $userid]));
+              return $currentUserData['role'];
+          }else{
+              return 0; // '0' means unauthencated user
+          }
+      }
+
+      /**
+       * Is The Current user has the administrative permission
+       */
+       function is_current_user_is_admin(){
+         if($this->get_current_user_role() == 10){
+            return true;
+         }
+       }
 
 }
 endif;
